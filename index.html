@@ -1,211 +1,137 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Web Timer / Alarm</title>
-<style>
-:root {
-  --bg: #0f1724;
-  --card: #111827;
-  --accent: #60a5fa;
-  --muted: #9ca3af;
-  --wedge-bg: #1e293b;
-  --wedge-fg: #60a5fa;
-}
-* { box-sizing: border-box; font-family: Inter, ui-sans-serif, system-ui }
-body {
-  margin: 0; min-height: 100vh;
-  background: linear-gradient(180deg,#041225 0%, #071a2e 100%);
-  color: #e6eef8;
-  display: flex; align-items: center; justify-content: center; padding: 24px;
-}
-.card {
-  width: 100%; max-width: 420px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 12px; padding: 22px;
-  box-shadow: 0 10px 30px rgba(2,6,23,0.6)
-}
-h1 { margin: 0; font-size: 20px }
-p.lead { color: var(--muted); margin: 6px 0 18px }
-
-.controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px }
-.form-row { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px }
-label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px }
-input[type=number] {
-  width: 100%; padding: 8px; border-radius: 6px;
-  border: 1px solid rgba(255,255,255,0.04);
-  background: transparent; color: inherit
-}
-.buttons { display: flex; gap: 10px; margin-top: 12px }
-button {
-  padding: 8px 12px; border-radius: 8px; border: none;
-  background: var(--accent); color: #04233a; font-weight: 600; cursor: pointer;
-}
-button.secondary {
-  background: transparent; border: 1px solid rgba(255,255,255,0.1);
-  color: var(--muted);
-}
-button:disabled { opacity: 0.6; cursor: not-allowed }
-
-.display { margin-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 18px }
-.wedge-timer { position: relative; width: 180px; height: 180px }
-svg.wedge {
-  width: 100%; height: 100%; display: block;
-}
-.wedge-bg { stroke: var(--wedge-bg); stroke-width: 14; fill: none }
-.wedge-fg { stroke: var(--wedge-fg); stroke-width: 14; fill: none;
-  stroke-linecap: round; transition: stroke-dashoffset 1s linear;
-}
-.time-box {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
-.time-box .big { font-size: 40px; font-weight: 700; color: var(--accent) }
-
-.status { color: var(--muted); font-size: 13px; min-height: 18px; margin-top: 6px }
-
-.running .wedge-fg { animation: glow 1.5s infinite alternate }
-@keyframes glow {
-  from { filter: drop-shadow(0 0 6px #60a5fa44) }
-  to   { filter: drop-shadow(0 0 18px #60a5fa) }
-}
-
-.ended .wedge-fg {
-  stroke: #f87171;
-  animation: flash 1s infinite alternate;
-}
-@keyframes flash {
-  from { stroke: #f87171; }
-  to   { stroke: #dc2626; }
-}
-.end-message {
-  opacity: 0; transform: translateY(20px);
-  transition: all 0.6s ease;
-  color: #f87171; font-size: 16px; font-weight: 600;
-}
-.ended .end-message { opacity: 1; transform: translateY(0) }
-
-.footer { margin-top: 14px; color: var(--muted); font-size: 13px }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Timer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      flex-direction: column;
+      text-align: center;
+    }
+    .circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 8px solid white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      transition: background 0.3s;
+    }
+    .ended {
+      background: red;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      50% { background: transparent; }
+    }
+    input, button {
+      margin: 5px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background: #ff9800;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e68900;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-<main class="card">
-  <h1>Web Timer / Alarm</h1>
-  <p class="lead">Set a countdown timer (hours/minutes/seconds). When it ends, watch the effect!</p>
-
-  <div class="controls">
-    <div class="form-row">
-      <label>Hours</label>
-      <input id="hours" type="number" min="0" max="999" value="0" />
-    </div>
-    <div class="form-row">
-      <label>Minutes</label>
-      <input id="minutes" type="number" min="0" max="59" value="1" />
-    </div>
-    <div class="form-row">
-      <label>Seconds</label>
-      <input id="seconds" type="number" min="0" max="59" value="0" />
-    </div>
+  <h1>⏰ Web Timer</h1>
+  <div class="circle" id="display">00:00</div>
+  <input type="number" id="minutes" placeholder="Minutes" min="0">
+  <input type="number" id="seconds" placeholder="Seconds" min="0">
+  <div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="resetTimer()">Reset</button>
   </div>
+  <div id="status"></div>
 
-  <div class="buttons">
-    <button id="startBtn">Start Alarm</button>
-    <button id="resetBtn" class="secondary" disabled>Reset</button>
-  </div>
+  <!-- Sound -->
+  <audio id="alarmSound" src="assets/alarm.mp3" preload="auto"></audio>
 
-  <div class="display" id="display">
-    <div class="wedge-timer">
-      <svg class="wedge" viewBox="0 0 100 100">
-        <circle class="wedge-bg" cx="50" cy="50" r="44"/>
-        <circle class="wedge-fg" cx="50" cy="50" r="44"
-          stroke-dasharray="276.46" stroke-dashoffset="0"/>
-      </svg>
-      <div class="time-box">
-        <span class="big" id="timeLeft">00:01:00</span>
-      </div>
-    </div>
-    <div class="status" id="status"></div>
-    <div class="end-message" id="endMessage"> ⏰ Time’s up! Take a break 🚀 </div>
-  </div>
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 
-  <div class="footer">Simple static web app for GitHub Pages</div>
-</main>
+  <script>
+    let timer, totalTime, remainingTime;
+    const display = document.getElementById('display');
+    const statusEl = document.getElementById('status');
+    const alarm = document.getElementById('alarmSound');
 
-<script>
-const hoursInput = document.getElementById('hours');
-const minutesInput = document.getElementById('minutes');
-const secondsInput = document.getElementById('seconds');
-const startBtn = document.getElementById('startBtn');
-const resetBtn = document.getElementById('resetBtn');
-const timeLeftEl = document.getElementById('timeLeft');
-const statusEl = document.getElementById('status');
-const wedgeFg = document.querySelector('.wedge-fg');
-const display = document.getElementById('display');
-const endMessage = document.getElementById('endMessage');
-
-let timer = null;
-let totalSeconds = 0;
-let remaining = 0;
-const CIRCUM = 2 * Math.PI * 44;
-
-function pad(n){return n.toString().padStart(2,'0')}
-function formatTime(sec){
-  const h=Math.floor(sec/3600);
-  const m=Math.floor((sec%3600)/60);
-  const s=sec%60;
-  return `${pad(h)}:${pad(m)}:${pad(s)}`
-}
-function updateWedge(){
-  const percent=remaining/totalSeconds;
-  wedgeFg.style.strokeDashoffset=CIRCUM*(1-percent);
-}
-function updateDisplay(){
-  timeLeftEl.textContent=formatTime(remaining);
-  updateWedge();
-}
-function setRunning(running){
-  if(running){
-    display.classList.add('running');
-    statusEl.textContent='⏳ Running...';
-    startBtn.disabled=true; resetBtn.disabled=false;
-    hoursInput.disabled=minutesInput.disabled=secondsInput.disabled=true;
-  } else {
-    display.classList.remove('running');
-    startBtn.disabled=false; resetBtn.disabled=true;
-    hoursInput.disabled=minutesInput.disabled=secondsInput.disabled=false;
-  }
-}
-function setEnded(){
-  display.classList.add('ended');
-  statusEl.textContent='Alarm finished!';
-}
-function startTimer(){
-  const h=+hoursInput.value||0, m=+minutesInput.value||0, s=+secondsInput.value||0;
-  totalSeconds=h*3600+m*60+s;
-  if(totalSeconds<=0){ statusEl.textContent='Enter time > 0'; return }
-  remaining=totalSeconds; updateDisplay(); setRunning(true);
-  timer=setInterval(()=>{
-    remaining--; updateDisplay();
-    if(remaining<=0){
-      clearInterval(timer); timer=null; remaining=0;
-      updateDisplay(); setEnded();
+    function updateDisplay(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2,'0');
+      const s = String(seconds % 60).padStart(2,'0');
+      display.textContent = `${m}:${s}`;
     }
-  },1000);
-}
-function resetTimer(){
-  if(timer) clearInterval(timer);
-  timer=null;
-  display.classList.remove('ended');
-  endMessage.style.opacity=0;
-  const h=+hoursInput.value||0,m=+minutesInput.value||0,s=+secondsInput.value||0;
-  totalSeconds=h*3600+m*60+s; remaining=totalSeconds;
-  updateDisplay(); setRunning(false); statusEl.textContent='';
-}
-startBtn.addEventListener('click', startTimer);
-resetBtn.addEventListener('click', resetTimer);
-[hoursInput,minutesInput,secondsInput].forEach(inp=>inp.addEventListener('input', resetTimer));
-resetTimer();
-</script>
+
+    function startTimer() {
+      const mins = parseInt(document.getElementById('minutes').value) || 0;
+      const secs = parseInt(document.getElementById('seconds').value) || 0;
+      totalTime = mins * 60 + secs;
+      remainingTime = totalTime;
+      clearInterval(timer);
+
+      if(totalTime > 0) {
+        timer = setInterval(() => {
+          if (remainingTime > 0) {
+            remainingTime--;
+            updateDisplay(remainingTime);
+          } else {
+            clearInterval(timer);
+            setEnded();
+          }
+        }, 1000);
+        updateDisplay(remainingTime);
+        display.classList.remove('ended');
+        statusEl.textContent = "⏳ Timer is running...";
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      updateDisplay(0);
+      display.classList.remove('ended');
+      statusEl.textContent = "✅ Timer reset!";
+    }
+
+    function setEnded() {
+      display.classList.add('ended');
+      statusEl.textContent = "🎉 Time's up!";
+      alarm.currentTime = 0;
+      alarm.play();   // ✅ Will work because Start button was clicked
+      fireConfetti();
+    }
+
+    function fireConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
 </body>
 </html>
