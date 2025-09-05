@@ -3,19 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Web Timer</title>
+  <title>Happy Birthday 🎂</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
-      background: linear-gradient(135deg, #667eea, #764ba2);
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       color: white;
       flex-direction: column;
       text-align: center;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
     }
     .circle {
       width: 200px;
@@ -30,7 +35,7 @@
       transition: background 0.3s;
     }
     .ended {
-      background: red;
+      background: pink;
       animation: blink 1s infinite;
     }
     @keyframes blink {
@@ -44,22 +49,32 @@
       font-size: 1rem;
     }
     button {
-      background: #ff9800;
+      background: #ff4081;
       color: white;
       cursor: pointer;
     }
     button:hover {
-      background: #e68900;
+      background: #e73370;
     }
     #status {
-      margin-top: 15px;
-      font-size: 1.2rem;
+      margin-top: 20px;
+      font-size: 1.3rem;
       font-weight: bold;
+    }
+    #birthday-message {
+      display: none;
+      font-size: 2rem;
+      margin-top: 30px;
+      animation: fadeIn 2s ease-in forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <h1>⏰ Web Timer</h1>
+  <h1>💖 Special Surprise Countdown 💖</h1>
   <div class="circle" id="display">00:00</div>
   <input type="number" id="minutes" placeholder="Minutes" min="0">
   <input type="number" id="seconds" placeholder="Seconds" min="0">
@@ -69,8 +84,14 @@
   </div>
   <div id="status"></div>
 
-  <!-- Sound -->
-  <audio id="alarmSound" src="assets/alarm.mp3" preload="auto"></audio>
+  <!-- Surprise Birthday Message -->
+  <div id="birthday-message">
+    🎂 Happy Birthday <span style="color:yellow;">Crush 💕</span> 🎂 <br>
+    💖 Wishing you endless smiles & joy 💖
+  </div>
+
+  <!-- Birthday Song -->
+  <audio id="birthdaySong" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
 
   <!-- Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -79,7 +100,8 @@
     let timer, totalTime, remainingTime;
     const display = document.getElementById('display');
     const statusEl = document.getElementById('status');
-    const alarm = document.getElementById('alarmSound');
+    const song = document.getElementById('birthdaySong');
+    const message = document.getElementById('birthday-message');
 
     function updateDisplay(seconds) {
       const m = String(Math.floor(seconds / 60)).padStart(2,'0');
@@ -106,7 +128,7 @@
         }, 1000);
         updateDisplay(remainingTime);
         display.classList.remove('ended');
-        statusEl.textContent = "⏳ Timer is running...";
+        statusEl.textContent = "⏳ Waiting for a surprise...";
       }
     }
 
@@ -114,23 +136,31 @@
       clearInterval(timer);
       updateDisplay(0);
       display.classList.remove('ended');
-      statusEl.textContent = "✅ Timer reset!";
+      statusEl.textContent = "🔄 Countdown reset!";
+      message.style.display = "none";
+      song.pause();
+      song.currentTime = 0;
     }
 
     function setEnded() {
       display.classList.add('ended');
-      statusEl.textContent = "🎉 Time's up!";
-      alarm.currentTime = 0;
-      alarm.play();   // ✅ Will work because Start button was clicked
+      statusEl.textContent = "🎉 Surprise unlocked!";
       fireConfetti();
+      playSong();
+      showMessage();
     }
 
     function fireConfetti() {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+      confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+    }
+
+    function playSong() {
+      song.currentTime = 0;
+      song.play();
+    }
+
+    function showMessage() {
+      message.style.display = "block";
     }
   </script>
 </body>
